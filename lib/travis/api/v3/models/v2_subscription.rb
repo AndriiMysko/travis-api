@@ -2,13 +2,15 @@ module Travis::API::V3
   class Models::V2Subscription
     include Models::Owner
 
-    attr_reader :id, :plan, :permissions, :source, :billing_info, :credit_card_info, :owner, :client_secret, :payment_intent, :addons, :available_standalone_addons, :created_at
+    attr_reader :id, :plan, :permissions, :source, :status, :billing_info, :credit_card_info, :owner, :client_secret, 
+                :payment_intent, :addons, :available_standalone_addons, :created_at, :valid_to
 
     def initialize(attributes = {})
       @id = attributes.fetch('id')
       @plan = attributes['plan_config'] && Models::V2PlanConfig.new(attributes['plan_config'])
       @permissions = Models::BillingPermissions.new(attributes.fetch('permissions'))
       @source = attributes.fetch('source')
+      @status = attributes.fetch('status')
       @billing_info = attributes['billing_info'] && Models::V2BillingInfo.new(@id, attributes['billing_info'])
       @credit_card_info = attributes['credit_card_info'] && Models::V2CreditCardInfo.new(@id, attributes['credit_card_info'])
       @payment_intent = attributes['payment_intent'] && Models::PaymentIntent.new(attributes['payment_intent'])
@@ -16,6 +18,7 @@ module Travis::API::V3
       @client_secret = attributes.fetch('client_secret')
       @addons = attributes['addons'].select { |addon| addon['current_usage']['status'] != 'expired' }.map { |addon| Models::V2Addon.new(addon) }
       @created_at = attributes.fetch('created_at')
+      @valid_to = attributes.fetch('valid_to')
     end
   end
 
